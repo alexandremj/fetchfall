@@ -1,10 +1,11 @@
 import requests
 
-def download(url):
-    r = requests.get(url)
-    img = open('a.jpg', 'wb')
-    img.write(r.content)
-    img.close()
+def download(card_name, url_dict):
+    for key in url_dict:
+        r = requests.get(url_dict[key])
+        img = open('a.jpg', 'wb')
+        img.write(r.content)
+        img.close()
 
 def main():
     download()
