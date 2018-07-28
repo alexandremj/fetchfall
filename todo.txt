@@ -1,0 +1,5 @@
+
+=> rewrite comments on testfall.py
+=> support multiple editions of cards
+=> minor refactoring
+=> remove img_download.py from project (function got implemented on testfall.py instead)
