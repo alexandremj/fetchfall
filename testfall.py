@@ -1,44 +1,40 @@
 
-"""
-Test code for a python Magic: the Gathering card fetcher using requests as the HTTP library of choice and Scryfall API
-"""
-
 import json
 import requests
 
-API_link = 'https://api.scryfall.com/'
+API_LINK = 'https://api.scryfall.com/'
+DEFAULT_SIZE = 'normal'
 
+def search(regex):
+    print('Search parameters: ' + regex)
+    regex.replace(':',  '%3A')
+    regex.replace('=', '%3D')
+    response_dict = json.loads(fetch_request(API_LINK + '/search?q='))
+    print(response_dict)
+
+# implement image_type as optional parameter
 def named(card_name):
     name = card_name.replace(' ', '+')
-    url = API_link + '/cards/named?fuzzy=' + name
-    images = fetch_image_url(url)['image_uris']
-    download(card_name, images)
+    url = API_LINK + '/cards/named?fuzzy=' + name
+    response_dict = json.loads(fetch_request(url))
+    img_url = response_dict[DEFAULT_SIZE]
+    filename = card_name.replace(' ', '_').lower() + DEFAULT_SIZE +'.jpg'
+    download(filename, img_url) 
 
-"""
-Card name is used only for naming of the files and may be
-removed in future versions
-Currently not supporting download of different sets
-"""
+def download(filename, img_url):
+    r = requests.get(img_url)
 
-def download(card_name, url_dict):
-    for key in url_dict:
-        r = requests.get(url_dict[key])
-        img = open(card_name + '_' + key + '.jpg', 'wb')
-        img.write(r.content)
-        img.close()
+    if(r.status_code != 200):
+        print('Request error at download(filename, img_url')
+        exit()
 
-"""
-the uris are for:
-small: 146x204 JPG
-normal: 488x680 JPG
-large: 672x936 JPG
-png: 745x1040 PNG
-art_crop: rectangular crop of the card's art
-border_crop: most of the border cropped off
-"""
+    img = open(filename, 'wb')
+    img.write(r.content)
+    img.close()
 
-def fetch_image_url(url):
+def fetch_request(url):
     r = requests.get(url)
+    print(r)
 
     if(r.status_code != 200):
         print('Card not found!')
@@ -46,16 +42,21 @@ def fetch_image_url(url):
         print('Please try again')
         exit()
 
-    return json.loads(r.content)
+    return r.json()
 
 def main():
-    try:
-        card_name = input('Please insert the card name: ')
-    except EOFError:
-        print('Something unexpected happened')
-        exit()
+    mode = input('Insert usage mode: ')
 
-    named(card_name)
+    if mode == 'named':
+        try:
+            card_name = input('Please insert the card name: ')
+        except EOFError:
+            print('Something unexpected happened')
+            exit()
+        named(card_name)
+    elif mode == 'search':
+        regex = input('Search parameters (following scryfall guidelines): ')
+        search(regex)
 
 if __name__ == "__main__":
     main()
