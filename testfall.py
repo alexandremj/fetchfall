@@ -5,13 +5,6 @@ import requests
 API_LINK = 'https://api.scryfall.com/'
 DEFAULT_SIZE = 'normal'
 
-def search(regex):
-    print('Search parameters: ' + regex)
-    regex.replace(':',  '%3A')
-    regex.replace('=', '%3D')
-    response_dict = json.loads(fetch_request(API_LINK + '/search?q='))
-    print(response_dict)
-
 # implement image_type as optional parameter
 def named(card_name):
     name = card_name.replace(' ', '+')
@@ -25,7 +18,7 @@ def download(filename, img_url):
     r = requests.get(img_url)
 
     if(r.status_code != 200):
-        print('Request error at download(filename, img_url')
+        print('Request error at download(filename, img_url)')
         exit()
 
     img = open(filename, 'wb')
@@ -45,18 +38,12 @@ def fetch_request(url):
     return r.json()
 
 def main():
-    mode = input('Insert usage mode: ')
-
-    if mode == 'named':
-        try:
-            card_name = input('Please insert the card name: ')
-        except EOFError:
-            print('Something unexpected happened')
-            exit()
-        named(card_name)
-    elif mode == 'search':
-        regex = input('Search parameters (following scryfall guidelines): ')
-        search(regex)
+    try:
+        card_name = input('Please insert the card name: ')
+    except EOFError:
+        print('Something unexpected happened')
+        exit()
+    named(card_name)
 
 if __name__ == "__main__":
     main()
