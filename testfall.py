@@ -9,37 +9,56 @@ def named(card_name, image_size):
     name = card_name.replace(' ', '+')
     img_link = (API_LINK + 'cards/named?fuzzy=' + name + '&format=image'
                 + '&version=' + image_size)
-    img = fetch_request(img_link)
+    try:
+        img = get_request(img_link)
+    except ValueError:
+        print('Request not successful')
+        exit()
 
     filename = card_name.replace(' ', '_').lower() + '_' + image_size +'.jpg'
     with open(filename, 'wb') as file:
         file.write(img.content) 
 
-def fetch_request(url):
+def get_request(url):
     r = requests.get(url)
+
+    if (r.status_code == 200):
+        return r
 
     # API specification states too many requests can result in a temporary
     # or permanent IP ban. Since we don't want this, we exit to cooldown
-    if(r.status_code == 429):
-        print('GET 429 error')
-        print('Stopping bot execution...')
-        exit()
-
-    if(r.status_code != 200):
-        print('Card not found!')
-        print('This could have several reasons, for instance more than one card having this same name fragment, or no cards fitting the provided name')
-        print('Please try again')
-        exit()
+    if (r.status_code == 429):
+        panic('GET 429 Too Many Requests on testfall.py')
+    
+    raise ValueError(r.status_code)
 
     return r
 
+""" 
+    When something really bad happens a notification is sent to my personal
+    Telegram account
+    Should be commented out when bot implementation is finished
+"""
+def panic(reason):
+#     requests.get('https://api.telegram.org/bot' 
+#                  + TOKEN 
+#                  + '/sendMessage?chat_id=171119330&text='
+#                  + reason)"""
+    print(reason)
+    exit()
+
 def main():
     try:
-        card_name = input('Please insert the card name: ')
+        card_name = input('Insert the card name: ')
     except EOFError:
-        print('Something unexpected happened')
+        print('Please insert a valid card name!')
         exit()
-    named(card_name, 'small')
+    try:
+        image_size = input('Insert the card size: ')
+    except EOFError:
+        image_size = DEFAULT_SIZE
+
+    named(card_name, image_size)
 
 if __name__ == "__main__":
     main()
