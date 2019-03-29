@@ -26,7 +26,13 @@ def download(filename, img_url):
 
 def fetch_request(url):
     r = requests.get(url)
-    print(r)
+
+    # API specification states too many requests can result in a temporary
+    # or permanent IP ban. Since we don't want this, we exit to cooldown
+    if(r.status_code == 429):
+        print('GET 429 error')
+        print('Stopping bot execution...')
+        exit()
 
     if(r.status_code != 200):
         print('Card not found!')
