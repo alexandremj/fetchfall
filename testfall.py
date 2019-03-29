@@ -21,9 +21,8 @@ def download(filename, img_url):
         print('Request error at download(filename, img_url)')
         exit()
 
-    img = open(filename, 'wb')
-    img.write(r.content)
-    img.close()
+    with open(filename, 'wb') as img:
+        img.write(r.content)
 
 def fetch_request(url):
     r = requests.get(url)
