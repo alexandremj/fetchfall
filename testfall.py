@@ -5,24 +5,15 @@ import requests
 API_LINK = 'https://api.scryfall.com/'
 DEFAULT_SIZE = 'normal'
 
-# implement image_type as optional parameter
-def named(card_name):
+def named(card_name, image_size):
     name = card_name.replace(' ', '+')
-    url = API_LINK + '/cards/named?fuzzy=' + name
-    response_dict = json.loads(fetch_request(url))
-    img_url = response_dict[DEFAULT_SIZE]
-    filename = card_name.replace(' ', '_').lower() + DEFAULT_SIZE +'.jpg'
-    download(filename, img_url) 
+    img_link = (API_LINK + 'cards/named?fuzzy=' + name + '&format=image'
+                + '&version=' + image_size)
+    img = fetch_request(img_link)
 
-def download(filename, img_url):
-    r = requests.get(img_url)
-
-    if(r.status_code != 200):
-        print('Request error at download(filename, img_url)')
-        exit()
-
-    with open(filename, 'wb') as img:
-        img.write(r.content)
+    filename = card_name.replace(' ', '_').lower() + '_' + image_size +'.jpg'
+    with open(filename, 'wb') as file:
+        file.write(img.content) 
 
 def fetch_request(url):
     r = requests.get(url)
@@ -40,7 +31,7 @@ def fetch_request(url):
         print('Please try again')
         exit()
 
-    return r.json()
+    return r
 
 def main():
     try:
@@ -48,7 +39,7 @@ def main():
     except EOFError:
         print('Something unexpected happened')
         exit()
-    named(card_name)
+    named(card_name, 'small')
 
 if __name__ == "__main__":
     main()
