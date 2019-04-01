@@ -17,7 +17,8 @@ def named(card_name, image_size):
 
     filename = card_name.replace(' ', '_').lower() + '_' + image_size +'.jpg'
     with open(filename, 'wb') as file:
-        file.write(img.content) 
+        file.write(img.content)
+    return filename
 
 def get_request(url):
     r = requests.get(url)
