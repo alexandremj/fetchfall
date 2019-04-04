@@ -1,15 +1,12 @@
-from testfall import named as download_named
+from testfall import named
 from telegram.ext import Updater, MessageHandler, Filters
 import re
 
-with open('token.txt', 'r') as f:
-    TOKEN=f.read()
+TOKEN='bot.token'
 
 def named(update, context):
-    print('Received update')
     print(context.matches)
-    filename = testfall.download_named(context.matches)
-    print('Sending image')
+    filename = testfall.named(context.matches)
     context.bot.sendPhoto(
                         chat_id=update.message.chat_id,
                         photo=open(filename),
@@ -22,7 +19,6 @@ def main():
     regex = re.compile('\[\[([\w | \. | \s |,])*\]\]')
     regex_handler = MessageHandler(Filters.regex(regex), named)
     dispatcher.add_handler(regex_handler)
-    print('start polling')
     updater.start_polling()
 
 if __name__ == '__main__':

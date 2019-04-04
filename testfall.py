@@ -7,7 +7,6 @@ DEFAULT_SIZE = 'normal'
 
 def named(card_name, image_size=DEFAULT_SIZE):
     name = card_name.strip('[]').replace(' ', '+')
-    print('Getting image link')
     img_link = (API_LINK + 'cards/named?fuzzy=' + name + '&format=image'
                 + '&version=' + image_size)
     try:
@@ -18,14 +17,11 @@ def named(card_name, image_size=DEFAULT_SIZE):
 
     filename = card_name.replace(' ', '_').lower() + '_' + image_size +'.jpg'
     with open(filename, 'wb') as file:
-        print('Writing to file')
         file.write(img.content)
     return filename
 
 def get_request(url):
-    print('Downloading image')
     r = requests.get(url)
-    print('Image downloaded')
 
     if (r.status_code == 200):
         return r
@@ -51,19 +47,3 @@ def panic(reason):
 #                  + reason)"""
     print(reason)
     exit()
-
-def main():
-    try:
-        card_name = input('Insert the card name: ')
-    except EOFError:
-        print('Please insert a valid card name!')
-        exit()
-    try:
-        image_size = input('Insert the card size: ')
-    except EOFError:
-        image_size = DEFAULT_SIZE
-
-    named(card_name, image_size)
-
-if __name__ == "__main__":
-    main()
