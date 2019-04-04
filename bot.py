@@ -1,4 +1,4 @@
-from testfall import named
+from testfall import named as download_named
 from telegram.ext import Updater, MessageHandler, Filters
 import re
 
@@ -6,7 +6,10 @@ with open('token.txt', 'r') as f:
     TOKEN=f.read()
 
 def named(update, context):
-    filename = testfall.named(context.matches)
+    print('Received update')
+    print(context.matches)
+    filename = testfall.download_named(context.matches)
+    print('Sending image')
     context.bot.sendPhoto(
                         chat_id=update.message.chat_id,
                         photo=open(filename),

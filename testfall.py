@@ -5,8 +5,9 @@ import requests
 API_LINK = 'https://api.scryfall.com/'
 DEFAULT_SIZE = 'normal'
 
-def named(card_name, image_size):
+def named(card_name, image_size=DEFAULT_SIZE):
     name = card_name.replace(' ', '+')
+    print('Getting image link')
     img_link = (API_LINK + 'cards/named?fuzzy=' + name + '&format=image'
                 + '&version=' + image_size)
     try:
@@ -17,11 +18,14 @@ def named(card_name, image_size):
 
     filename = card_name.replace(' ', '_').lower() + '_' + image_size +'.jpg'
     with open(filename, 'wb') as file:
+        print('Writing to file')
         file.write(img.content)
     return filename
 
 def get_request(url):
+    print('Downloading image')
     r = requests.get(url)
+    print('Image downloaded')
 
     if (r.status_code == 200):
         return r
