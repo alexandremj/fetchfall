@@ -6,7 +6,7 @@ API_LINK = 'https://api.scryfall.com/'
 DEFAULT_SIZE = 'normal'
 
 def named(card_name, image_size=DEFAULT_SIZE):
-    name = card_name.replace(' ', '+')
+    name = card_name.strip('[]').replace(' ', '+')
     print('Getting image link')
     img_link = (API_LINK + 'cards/named?fuzzy=' + name + '&format=image'
                 + '&version=' + image_size)
